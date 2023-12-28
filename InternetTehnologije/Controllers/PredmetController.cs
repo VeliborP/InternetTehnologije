@@ -21,7 +21,17 @@ namespace InternetTehnologije.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Predmets.ToListAsync());
+            var predmetiDb = await _context.Predmets.ToListAsync();
+
+            var predmeti = predmetiDb.Select(predmet => new PredmetViewModel
+            {
+                Id = predmet.Id,
+                Sifra = predmet.Sifra,
+                Naziv = predmet.Naziv,
+                Espb = predmet.Espb
+            });
+
+            return View(predmeti);
         }
 
         public async Task<IActionResult> Details(int? id)
