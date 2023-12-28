@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using InternetTehnologije.DAL;
+using InternetTehnologije.Models;
 
 namespace InternetTehnologije.Controllers
 {
@@ -18,13 +19,11 @@ namespace InternetTehnologije.Controllers
             _context = context;
         }
 
-        // GET: Predmet
         public async Task<IActionResult> Index()
         {
             return View(await _context.Predmets.ToListAsync());
         }
 
-        // GET: Predmet/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -42,29 +41,31 @@ namespace InternetTehnologije.Controllers
             return View(predmet1);
         }
 
-        // GET: Predmet/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Predmet/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Sifra,Naziv,Espb")] Predmet predmet)
+        public async Task<IActionResult> Create(PredmetPostModel predmet)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(predmet);
+                var predmetDto = new Predmet
+                {
+                    Naziv = predmet.Naziv,
+                    Sifra = predmet.Sifra,
+                    Espb = predmet.Espb
+                };
+
+                _context.Add(predmetDto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(predmet);
         }
 
-        // GET: Predmet/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -77,17 +78,22 @@ namespace InternetTehnologije.Controllers
             {
                 return NotFound();
             }
-            return View(predmet);
+
+            var predmetViewModel = new PredmetPostModel
+            {
+                Id = predmet.Id,
+                Sifra = predmet.Sifra,
+                Naziv = predmet.Naziv,
+                Espb = predmet.Espb
+            };
+            return View(predmetViewModel);
         }
 
-        // POST: Predmet/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Sifra,Naziv,Espb")] Predmet predmet)
+        public async Task<IActionResult> Edit(int id, PredmetPostModel predmetViewModel)
         {
-            if (id != predmet.Id)
+            if (id != predmetViewModel.Id)
             {
                 return NotFound();
             }
@@ -96,12 +102,19 @@ namespace InternetTehnologije.Controllers
             {
                 try
                 {
+                    var predmet = new Predmet
+                    {
+                        Id = predmetViewModel.Id,
+                        Naziv = predmetViewModel.Naziv,
+                        Espb = predmetViewModel.Espb,
+                        Sifra = predmetViewModel.Sifra
+                    };
                     _context.Update(predmet);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PredmetExists(predmet.Id))
+                    if (!PredmetExists(predmetViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -112,7 +125,7 @@ namespace InternetTehnologije.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(predmet);
+            return View(predmetViewModel);
         }
 
         // GET: Predmet/Delete/5
