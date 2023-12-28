@@ -32,14 +32,14 @@ namespace InternetTehnologije.Controllers
                 return NotFound();
             }
 
-            var predmet = await _context.Predmets
+            var predmet1 = await _context.Predmets
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (predmet == null)
+            if (predmet1 == null)
             {
                 return NotFound();
             }
 
-            return View(predmet);
+            return View(predmet1);
         }
 
         // GET: Predmet/Create
