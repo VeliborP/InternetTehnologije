@@ -52,20 +52,18 @@ namespace InternetTehnologije.DAL
 
             modelBuilder.Entity<PredmetSmer>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(d => new { d.PredmetId, d.SmerId });
 
                 entity.ToTable("PredmetSmer");
 
                 entity.HasOne(d => d.Predmet)
                     .WithMany()
                     .HasForeignKey(d => d.PredmetId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Predmet_Smer");
 
                 entity.HasOne(d => d.Smer)
                     .WithMany()
                     .HasForeignKey(d => d.SmerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PredmetSmer_Smer");
             });
 
